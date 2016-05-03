@@ -315,6 +315,32 @@ VSA_Compare(const struct suckaddr *sua1, const struct suckaddr *sua2)
 	return (memcmp(sua1, sua2, vsa_suckaddr_len));
 }
 
+int
+VSA_Compare_Addr(const struct suckaddr *sua1, const struct suckaddr *sua2)
+{
+        int i1, i2;
+
+	CHECK_OBJ_NOTNULL(sua1, SUCKADDR_MAGIC);
+	CHECK_OBJ_NOTNULL(sua2, SUCKADDR_MAGIC);
+
+	i1 = VSA_Get_Proto(sua1);
+	i2 = VSA_Get_Proto(sua2);
+
+	if (i1 != i2)
+	        return (1);
+	switch(i1) {
+	        case PF_INET:
+		        return (memcmp(&sua1->sa4.sin_addr, 
+				       &sua2->sa4.sin_addr, 
+				       sizeof(sua1->sa4.sin_addr)));
+		case PF_INET6:
+			return (memcmp(&sua1->sa6.sin6_addr,
+				       &sua2->sa6.sin6_addr,
+				       sizeof(sua1->sa6.sin6_addr)));
+	}
+	return (1);
+}
+
 struct suckaddr *
 VSA_Clone(const struct suckaddr *sua)
 {

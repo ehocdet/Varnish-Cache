@@ -408,3 +408,17 @@ VBT_Wait(struct worker *wrk, struct vbc *vbc)
 	vbc->cond = NULL;
 	Lck_Unlock(&tp->mtx);
 }
+
+int
+VBT_Match(const struct tcp_pool *tp, const struct suckaddr *sua)
+{
+	CHECK_OBJ_NOTNULL(tp, TCP_POOL_MAGIC);
+
+	switch(VSA_Get_Proto(sua)) {
+	        case PF_INET:
+		        return (tp->ip4 != NULL && !VSA_Compare_Addr(tp->ip4, sua));
+	        case PF_INET6:
+	                return (tp->ip6 != NULL && !VSA_Compare_Addr(tp->ip6, sua));
+	}
+	return (0);
+}

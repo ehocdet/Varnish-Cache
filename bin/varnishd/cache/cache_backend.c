@@ -278,6 +278,19 @@ vbe_dir_getip(const struct director *d, struct worker *wrk,
 	return (vbc->addr);
 }
 
+static const struct director * __match_proto__(vdi_search_f)
+vbe_dir_search(const struct director *d, const struct suckaddr *sa)
+{
+        struct backend *bp;
+
+	CHECK_OBJ_NOTNULL(d, DIRECTOR_MAGIC);
+	CAST_OBJ_NOTNULL(bp, d->priv, BACKEND_MAGIC);
+
+	if (VBT_Match(bp->tcp_pool, sa))
+	        return d;
+	return NULL;
+}
+
 /*--------------------------------------------------------------------*/
 
 static void
@@ -363,4 +376,5 @@ VBE_fill_director(struct backend *be)
 	d->getip = vbe_dir_getip;
 	d->finish = vbe_dir_finish;
 	d->panic = vbe_panic;
+	d->search = vbe_dir_search;
 }

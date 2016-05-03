@@ -83,6 +83,7 @@ VRB_Iterate(struct req *req, req_body_iter_f *func, void *priv)
 		VSLb(req->vsl, SLT_VCL_Error,
 		    "Uncached req.body can only be consumed once.");
 		return (-1);
+	case REQ_BODY_TOO_LARGE:
 	case REQ_BODY_FAIL:
 		VSLb(req->vsl, SLT_FetchError,
 		    "Had failed reading req.body before.");
@@ -232,7 +233,7 @@ VRB_Cache(struct req *req, ssize_t maxsize)
 	vfc->wrk = req->wrk;
 
 	if (req->htc->content_length > maxsize) {
-		req->req_body_status = REQ_BODY_FAIL;
+		req->req_body_status = REQ_BODY_TOO_LARGE;
 		(void)VFP_Error(vfc, "Request body too big to cache");
 		return (-1);
 	}
@@ -263,7 +264,7 @@ VRB_Cache(struct req *req, ssize_t maxsize)
 	do {
 		AZ(vfc->failed);
 		if (req->req_bodybytes > maxsize) {
-			req->req_body_status = REQ_BODY_FAIL;
+			req->req_body_status = REQ_BODY_TOO_LARGE;
 			(void)VFP_Error(vfc, "Request body too big to cache");
 			VFP_Close(vfc);
 			return(-1);

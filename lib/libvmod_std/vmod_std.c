@@ -244,7 +244,7 @@ vmod_timestamp(VRT_CTX, VCL_STRING label)
 }
 
 VCL_VOID __match_proto__(td_std_cache_req_body)
-vmod_cache_req_body(VRT_CTX, VCL_BYTES size)
+vmod_cache_req_body(VRT_CTX, VCL_BYTES size, VCL_STRING hint)
 {
 	int result;
 	ssize_t ss;
@@ -253,7 +253,7 @@ vmod_cache_req_body(VRT_CTX, VCL_BYTES size)
 	if (size < 0)
 		size = 0;
 	ss = (ssize_t)size;
-	result = VRT_CacheReqBody(ctx, ss);
+	result = VRT_CacheReqBody(ctx, ss, hint);
 	VSLb(ctx->vsl, SLT_Debug, "VRT_CacheReqBody(%zd): %d", ss, result);
 }
 

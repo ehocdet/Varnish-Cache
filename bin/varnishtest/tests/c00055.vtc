@@ -19,7 +19,7 @@ varnish v1 -cliok "param.set vcc_allow_inline_c true" -vcl+backend {
 			const struct gethdr_s HDR_REQ_X_BodyBytes =
 			    { HDR_REQ, "\014X-BodyBytes:"};
 			VRT_SetHdr(ctx, &HDR_REQ_X_BodyBytes,
-			    VRT_INT_string(ctx, VRT_CacheReqBody(ctx, 1024)),
+			    VRT_INT_string(ctx, VRT_CacheReqBody(ctx, 1024, "Transient")),
 			    vrt_magic_string_end);
 		}C
 		return (pass);

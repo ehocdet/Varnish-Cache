@@ -914,7 +914,7 @@ void Req_Fail(struct req *req, enum sess_close reason);
 
 /* cache_req_body.c */
 int VRB_Ignore(struct req *req);
-ssize_t VRB_Cache(struct req *req, ssize_t maxsize);
+ssize_t VRB_Cache(struct req *req, ssize_t maxsize, const char *hint);
 typedef int (req_body_iter_f)(struct req *, void *priv, void *ptr, size_t);
 ssize_t VRB_Iterate(struct req *req, req_body_iter_f *func, void *priv);
 void VRB_Free(struct req *req);

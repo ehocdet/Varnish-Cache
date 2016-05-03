@@ -233,7 +233,7 @@ Description
 Example
 	set req.url = std.querysort(req.url);
 
-$Function VOID cache_req_body(BYTES size)
+$Function VOID cache_req_body(BYTES size, STRING hint="Transient")
 
 Description
 	Cache the req.body if it is smaller than *size*.

@@ -195,7 +195,7 @@ VRB_Free(struct req *req)
  */
 
 ssize_t
-VRB_Cache(struct req *req, ssize_t maxsize)
+VRB_Cache(struct req *req, ssize_t maxsize, const char *hint)
 {
 	ssize_t l, yet;
 	struct vfp_ctx *vfc;
@@ -240,7 +240,7 @@ VRB_Cache(struct req *req, ssize_t maxsize)
 
 	req->body_oc = HSH_Private(req->wrk);
 	AN(req->body_oc);
-	XXXAN(STV_NewObject(req->body_oc, req->wrk, TRANSIENT_STORAGE, 8));
+	XXXAN(STV_NewObject(req->body_oc, req->wrk, hint, 8));
 
 	vfc->http = req->http;
 	vfc->oc = req->body_oc;

@@ -64,4 +64,8 @@ FEATURE_BIT(HTTPS_SCHEME,		https_scheme,
 	"Extract host from full URI in the request line if the scheme is "
 	"https."
 )
+FEATURE_BIT(BIND_BEFORE_CONNECT,	bind_before_connect,
+	"Activate bind before connect",
+	"Move the 64k local ports limit to 64k connections per destination."
+)
 /*lint -restore */

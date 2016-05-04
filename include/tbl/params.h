@@ -322,6 +322,21 @@ PARAM(
 )
 
 PARAM(
+	/* name */	connect_retry,
+	/* typ */	uint,
+	/* min */	"0",
+	/* max */	NULL,
+	/* default */	"3",
+	/* units */	NULL,
+	/* flags */	0,
+	/* s-text */
+	"Retry tcp connect to backend."
+	"Only usefull with bind before connect",
+	/* l-text */	"",
+	/* func */	NULL
+)
+
+PARAM(
 	/* name */	critbit_cooloff,
 	/* typ */	timeout,
 	/* min */	"60.000",

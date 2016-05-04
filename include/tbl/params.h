@@ -337,6 +337,21 @@ PARAM(
 )
 
 PARAM(
+	/* name */	connect_errno,
+	/* typ */	uint,
+	/* min */	"0",
+	/* max */	NULL,
+	/* default */	"0",
+	/* units */	"errno",
+	/* flags */	0,
+	/* s-text */
+	"Retry tcp connect to backend when connect_errno is set."
+	"Only for live workaround with connect_retry.",
+	/* l-text */	"",
+	/* func */	NULL
+)
+
+PARAM(
 	/* name */	critbit_cooloff,
 	/* typ */	timeout,
 	/* min */	"60.000",

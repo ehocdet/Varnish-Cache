@@ -273,7 +273,29 @@ VTCP_connected(int s)
 }
 
 int
-VTCP_connect(const struct suckaddr *name, int msec)
+VTCP_bind_before_connect(int s, const struct suckaddr *name)
+{
+	int val;
+	const struct sockaddr *sa;
+	socklen_t sl;
+
+	if (name == NULL)
+		return (-1);
+	AN(VSA_Sane(name));
+	sa = VSA_Get_Sockaddr(name, &sl);
+	AN(sa);
+	AN(sl);
+
+	val = 1;
+	if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &val, sizeof val) != 0)
+		return (-1);
+	if (bind(s, sa, sl) != 0)
+		return (-1);
+	return (0);
+}
+
+int
+VTCP_connect(const struct suckaddr *name, const struct suckaddr *source, int msec)
 {
 	int s, i;
 	struct pollfd fds[1];
@@ -295,6 +317,13 @@ VTCP_connect(const struct suckaddr *name, int msec)
 	/* Set the socket non-blocking */
 	if (msec != 0)
 		(void)VTCP_nonblocking(s);
+
+	/* Switch to the bind before connect logic */
+	if (source != NULL)
+		if (VTCP_bind_before_connect(s, source) != 0) {
+			AZ(close(s));
+			return (-1);
+		}
 
 	i = connect(s, sa, sl);
 	if (i == 0)
@@ -374,7 +403,7 @@ vtcp_open_callback(void *priv, const struct suckaddr *sa)
 {
 	double *p = priv;
 
-	return (VTCP_connect(sa, (int)floor(*p * 1e3)));
+	return (VTCP_connect(sa, NULL, (int)floor(*p * 1e3)));
 }
 
 int

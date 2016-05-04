@@ -242,7 +242,7 @@ vbt_connect(const struct suckaddr *name, const struct suckaddr *source, int msec
 		s = VTCP_connect(name, source, msec);
 		if (s >= 0)
 			return(s);
-		if (errno != EADDRNOTAVAIL)
+		if (errno != EADDRNOTAVAIL && errno != cache_param->connect_errno)
 			break;
 	}
 	return (-1);

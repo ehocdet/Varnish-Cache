@@ -36,6 +36,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "cache.h"
 
@@ -232,26 +233,48 @@ VBT_Rel(struct tcp_pool **tpp)
  * probing cannot use a recycled connection.
  */
 
+static int
+vbt_connect(const struct suckaddr *name, const struct suckaddr *source, int msec)
+{
+	int s, r;
+
+	for (r = 0; r <= cache_param->connect_retry; r++) {
+		s = VTCP_connect(name, source, msec);
+		if (s >= 0)
+			return(s);
+		if (errno != EADDRNOTAVAIL)
+			break;
+	}
+	return (-1);
+}
+
 int
 VBT_Open(const struct tcp_pool *tp, double tmo, const struct suckaddr **sa)
 {
 	int s;
 	int msec;
+	const struct suckaddr *soa4 = NULL;
+	const struct suckaddr *soa6 = NULL;
+
+	if (FEATURE(FEATURE_BIND_BEFORE_CONNECT)) {
+		soa4 = vsa_ipv4_any();
+		soa6 = vsa_ipv6_any();
+	}
 
 	CHECK_OBJ_NOTNULL(tp, TCP_POOL_MAGIC);
 
 	msec = (int)floor(tmo * 1000.0);
 	if (cache_param->prefer_ipv6) {
 		*sa = tp->ip6;
-		s = VTCP_connect(tp->ip6, NULL, msec);
+		s = vbt_connect(tp->ip6, soa6, msec);
 		if (s >= 0)
 			return(s);
 	}
 	*sa = tp->ip4;
-	s = VTCP_connect(tp->ip4, NULL, msec);
+	s = vbt_connect(tp->ip4, soa4, msec);
 	if (s < 0 && !cache_param->prefer_ipv6) {
 		*sa = tp->ip6;
-		s = VTCP_connect(tp->ip6, NULL, msec);
+		s = vbt_connect(tp->ip6, soa6, msec);
 	}
 	return(s);
 }

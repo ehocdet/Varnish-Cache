@@ -322,6 +322,20 @@ PARAM(
 )
 
 PARAM(
+	/* name */	connect_timeout_retry,
+	/* typ */	uint,
+	/* min */	"0",
+	/* max */	NULL,
+	/* default */	"0",
+	/* units */	NULL,
+	/* flags */	0,
+	/* s-text */
+	"Retry tcp connect to backend on timeout.",
+	/* l-text */	"",
+	/* func */	NULL
+)
+
+PARAM(
 	/* name */	connect_retry,
 	/* typ */	uint,
 	/* min */	"0",

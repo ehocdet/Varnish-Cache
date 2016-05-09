@@ -236,13 +236,17 @@ VBT_Rel(struct tcp_pool **tpp)
 static int
 vbt_connect(const struct suckaddr *name, const struct suckaddr *source, int msec)
 {
-	int s, r;
+	int s, t, r;
 
-	for (r = 0; r <= cache_param->connect_retry; r++) {
-		s = VTCP_connect(name, source, msec);
-		if (s >= 0)
-			return(s);
-		if (errno != EADDRNOTAVAIL && errno != cache_param->connect_errno)
+	for (t = 0; t <= cache_param->connect_timeout_retry; t++) {
+		for (r = 0; r <= cache_param->connect_retry; r++) {
+			s = VTCP_connect(name, source, msec);
+			if (s >= 0)
+				return(s);
+			if (errno != EADDRNOTAVAIL && errno != cache_param->connect_errno)
+				break;
+		}
+		if (errno != ETIMEDOUT)
 			break;
 	}
 	return (-1);

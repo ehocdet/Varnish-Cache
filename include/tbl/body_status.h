@@ -40,6 +40,7 @@ BODYSTATUS(LENGTH,	length,		3,	1,	1)
 BODYSTATUS(EOF,		eof,		4,	1,	0)
 BODYSTATUS(TAKEN,	taken,		5,	0,	0)
 BODYSTATUS(CACHED,	cached,		6,	2,	1)
+BODYSTATUS(413,		413,		7,	-1,	0)
 #undef BODYSTATUS
 
 /*lint -restore */

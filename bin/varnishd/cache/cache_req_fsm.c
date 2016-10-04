@@ -903,6 +903,11 @@ cnt_recv(struct worker *wrk, struct req *req)
 		req->doclose = SC_RX_BODY;
 		return (REQ_FSM_DONE);
 	}
+	if (req->req_body_status == BS_413) {
+		req->err_code = 413;
+		req->req_step = R_STP_SYNTH;
+		return (REQ_FSM_MORE);
+	}
 
 	recv_handling = wrk->handling;
 

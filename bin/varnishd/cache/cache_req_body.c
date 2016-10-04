@@ -57,6 +57,7 @@ vrb_pull(struct req *req, ssize_t maxsize, objiterate_f *func, void *priv)
 	enum vfp_status vfps = VFP_ERROR;
 	const struct stevedore *stv;
 	ssize_t req_bodybytes = 0;
+	enum req_body_state_e rbs_fail = REQ_BODY_FAIL;
 
 	CHECK_OBJ_NOTNULL(req, REQ_MAGIC);
 
@@ -86,7 +87,7 @@ vrb_pull(struct req *req, ssize_t maxsize, objiterate_f *func, void *priv)
 	vfc->oc = req->body_oc;
 
 	if (VFP_Open(vfc) < 0) {
-		req->req_body_status = REQ_BODY_FAIL;
+		req->req_body_status = rbs_fail;
 		HSH_DerefBoc(req->wrk, req->body_oc);
 		AZ(HSH_DerefObjCore(req->wrk, &req->body_oc, 0));
 		return (-1);
@@ -103,6 +104,7 @@ vrb_pull(struct req *req, ssize_t maxsize, objiterate_f *func, void *priv)
 	do {
 		AZ(vfc->failed);
 		if (maxsize >= 0 && req_bodybytes > maxsize) {
+			rbs_fail = REQ_BODY_TOO_LARGE;
 			(void)VFP_Error(vfc, "Request body too big to cache");
 			break;
 		}
@@ -134,7 +136,7 @@ vrb_pull(struct req *req, ssize_t maxsize, objiterate_f *func, void *priv)
 		HSH_DerefBoc(req->wrk, req->body_oc);
 		AZ(HSH_DerefObjCore(req->wrk, &req->body_oc, 0));
 		if (vfps != VFP_END) {
-			req->req_body_status = REQ_BODY_FAIL;
+			req->req_body_status = rbs_fail;
 			if (r == 0)
 				r = -1;
 		}
@@ -146,7 +148,7 @@ vrb_pull(struct req *req, ssize_t maxsize, objiterate_f *func, void *priv)
 	HSH_DerefBoc(req->wrk, req->body_oc);
 
 	if (vfps != VFP_END) {
-		req->req_body_status = REQ_BODY_FAIL;
+		req->req_body_status = rbs_fail;
 		AZ(HSH_DerefObjCore(req->wrk, &req->body_oc, 0));
 		return (-1);
 	}
@@ -202,6 +204,7 @@ VRB_Iterate(struct worker *wrk, struct vsl_log *vsl,
 		VSLb(vsl, SLT_VCL_Error,
 		    "Uncached req.body can only be consumed once.");
 		return (-1);
+	case REQ_BODY_TOO_LARGE:
 	case REQ_BODY_FAIL:
 		VSLb(vsl, SLT_FetchError,
 		    "Had failed reading req.body before.");
@@ -300,6 +303,7 @@ VRB_Cache(struct req *req, ssize_t maxsize)
 		AZ(ObjGetU64(req->wrk, req->body_oc, OA_LEN, &u));
 		return (u);
 	case REQ_BODY_FAIL:
+	case REQ_BODY_TOO_LARGE:
 		return (-1);
 	case REQ_BODY_NONE:
 		return (0);
@@ -311,7 +315,7 @@ VRB_Cache(struct req *req, ssize_t maxsize)
 	}
 
 	if (req->htc->content_length > maxsize) {
-		req->req_body_status = REQ_BODY_FAIL;
+		req->req_body_status = REQ_BODY_TOO_LARGE;
 		(void)VFP_Error(req->vfc, "Request body too big to cache");
 		return (-1);
 	}

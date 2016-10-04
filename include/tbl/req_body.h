@@ -35,6 +35,7 @@ REQ_BODY(WITH_LEN)
 /* states >= TAKEN imply that no body is to be read */
 REQ_BODY(TAKEN)
 REQ_BODY(CACHED)
+REQ_BODY(TOO_LARGE)
 REQ_BODY(FAIL)
 REQ_BODY(NONE)
 #undef REQ_BODY

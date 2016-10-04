@@ -10,7 +10,7 @@ shell {
 	EOF
 }
 
-shell -match "^1$" {
+shell -err -match "^0$" {
 	{
 		varnishd -F -n "${tmpdir}/t" -a "${tmpdir}/sock" \
 			-p vcc_err_unref=off -f "${tmpdir}/unref.vcl" &
@@ -22,7 +22,7 @@ shell -match "^1$" {
 
 varnish v1 -cliok "param.set vcc_err_unref off"
 
-shell -match "^1$" {
+shell -err -match "^0$" {
 	varnishadm -n "${v1_name}" vcl.load unref "${tmpdir}/unref.vcl" 2>&1 |
 	grep -c "That was just a warning"
 }

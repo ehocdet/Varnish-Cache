@@ -80,13 +80,11 @@ vcc_checkref(struct vcc *tl, const struct symbol *sym)
 		VSB_printf(tl->sb, "Undefined %s %.*s, first reference:\n",
 		    sym->kind->name, PF(sym->ref_b));
 		vcc_ErrWhere(tl, sym->ref_b);
-	} else if (sym->ndef != 0 && sym->nref == 0) {
+	} else if (sym->ndef != 0 && sym->nref == 0 && tl->err_unref) {
 		AN(sym->def_b);
 		VSB_printf(tl->sb, "Unused %s %.*s, defined:\n",
 		    sym->kind->name, PF(sym->def_b));
 		vcc_ErrWhere(tl, sym->def_b);
-		if (!tl->err_unref)
-			vcc_Warn(tl);
 	}
 }
 

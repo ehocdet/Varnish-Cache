@@ -42,6 +42,7 @@
 #include "vcli.h"
 #include "vcli_priv.h"
 #include "vrt.h"
+#include "vtcp.h"
 #include "vtim.h"
 
 #include "cache_director.h"
@@ -329,12 +330,16 @@ static int __match_proto__()
 do_list(struct cli *cli, struct backend *b, void *priv)
 {
 	int *probes;
+	char addr[VTCP_ADDRBUFSIZE];
 
 	AN(priv);
 	probes = priv;
 	CHECK_OBJ_NOTNULL(b, BACKEND_MAGIC);
 
 	VCLI_Out(cli, "\n%-30s", b->display_name);
+
+	VBT_Out(b->tcp_pool, addr, sizeof addr);
+	VCLI_Out(cli, " %-16s", addr);
 
 	VCLI_Out(cli, " %-10s", b->admin_health);
 
@@ -372,7 +377,8 @@ cli_backend_list(struct cli *cli, const char * const *av, void *priv)
 		VCLI_SetResult(cli, CLIS_PARAM);
 		return;
 	}
-	VCLI_Out(cli, "%-30s %-10s %s", "Backend name", "Admin", "Probe");
+	VCLI_Out(cli, "%-30s %-16s %-10s %s", "Backend name",
+		 "preferred IP", "Admin", "Probe");
 	(void)backend_find(cli, av[2], do_list, &probes);
 }
 

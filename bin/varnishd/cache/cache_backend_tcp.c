@@ -485,3 +485,23 @@ VBT_Match(const struct tcp_pool *tp, const struct suckaddr *sua)
 	}
 	return (0);
 }
+
+void
+VBT_Out(const struct tcp_pool *tp, char *p, unsigned len)
+{
+	const struct suckaddr *sa = NULL;
+
+	CHECK_OBJ_NOTNULL(tp, TCP_POOL_MAGIC);
+	if (cache_param->prefer_ipv6)
+		sa = tp->ip6;
+	if (sa == NULL)
+		sa = tp->ip4;
+	if (sa == NULL)
+		sa = tp->ip6;
+	if (sa != NULL)
+		VTCP_name(sa, p, len, NULL, 0);
+	else if (len > 1) {
+		p[0] = '-';
+		p[1] = '\0';
+	}
+}

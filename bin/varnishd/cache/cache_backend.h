@@ -131,6 +131,7 @@ struct vbc *VBT_Get(struct tcp_pool *, double tmo, const struct backend *,
 void VBT_Wait(struct worker *, struct vbc *);
 int VBT_Compare(const struct tcp_pool *, const struct suckaddr *sa,
 	      int (*cmp)(const struct suckaddr *, const struct suckaddr *));
+void VBT_Out(const struct tcp_pool *, char *, unsigned);
 
 /* cache_vcl.c */
 int VCL_AddBackend(struct vcl *, struct backend *);

@@ -163,6 +163,20 @@ vbe_dir_healthy(const struct director *d, const struct busyobj *bo,
 	return (VDI_Healthy(be->director, changed));
 }
 
+static unsigned v_matchproto_(vdi_uptime_f)
+vbe_dir_uptime(const struct director *d, const struct busyobj *bo,
+    double *changed, double *load)
+{
+	struct backend *be;
+
+	CHECK_OBJ_NOTNULL(d, DIRECTOR_MAGIC);
+	CAST_OBJ_NOTNULL(be, d->priv, BACKEND_MAGIC);
+
+	if (load != NULL)
+		*load = be->n_conn;
+	return (VDI_Healthy(be->director, changed));
+}
+
 static void v_matchproto_(vdi_finish_f)
 vbe_dir_finish(const struct director *d, struct worker *wrk,
     struct busyobj *bo)
@@ -471,6 +485,7 @@ VRT_new_backend_clustered(VRT_CTX, struct vsmw_cluster *vc,
 	d->vcl_name = be->vcl_name;
 	d->http1pipe = vbe_dir_http1pipe;
 	d->healthy = vbe_dir_healthy;
+	d->uptime = vbe_dir_uptime;
 	d->gethdrs = vbe_dir_gethdrs;
 	d->getip = vbe_dir_getip;
 	d->finish = vbe_dir_finish;

@@ -283,6 +283,20 @@ vbe_dir_getip(const struct director *d, struct worker *wrk,
 	return (vbc->addr);
 }
 
+static const struct director * __match_proto__(vdi_find_f)
+vbe_dir_find(const struct director *d, const struct suckaddr *sa,
+	     int (*cmp)(const struct suckaddr *, const struct suckaddr *))
+{
+        struct backend *bp;
+
+	CHECK_OBJ_NOTNULL(d, DIRECTOR_MAGIC);
+	CAST_OBJ_NOTNULL(bp, d->priv, BACKEND_MAGIC);
+
+	if (VBT_Compare(bp->tcp_pool, sa, cmp))
+	        return d;
+	return NULL;
+}
+
 /*--------------------------------------------------------------------*/
 
 static enum sess_close
@@ -372,4 +386,5 @@ VBE_fill_director(struct backend *be)
 	d->getip = vbe_dir_getip;
 	d->finish = vbe_dir_finish;
 	d->panic = vbe_panic;
+	d->find = vbe_dir_find;
 }

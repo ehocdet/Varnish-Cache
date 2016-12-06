@@ -417,6 +417,23 @@ VBT_Wait(struct worker *wrk, struct vbc *vbc)
 
 /*--------------------------------------------------------------------*/
 
+int
+VBT_Compare(const struct tcp_pool *tp, const struct suckaddr *sua,
+	  int (*cmp)(const struct suckaddr *, const struct suckaddr *))
+{
+	CHECK_OBJ_NOTNULL(tp, TCP_POOL_MAGIC);
+
+	switch(VSA_Get_Proto(sua)) {
+	        case PF_INET:
+		        return (tp->ip4 != NULL && !cmp(tp->ip4, sua));
+	        case PF_INET6:
+	                return (tp->ip6 != NULL && !cmp(tp->ip6, sua));
+	}
+	return (0);
+}
+
+/*--------------------------------------------------------------------*/
+
 void
 VBT_Init(void)
 {

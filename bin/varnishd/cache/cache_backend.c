@@ -306,6 +306,20 @@ vbe_dir_getip(const struct director *d, struct worker *wrk,
 	return (VTP_getip(pfd));
 }
 
+static const struct director * v_matchproto_(vdi_find_f)
+vbe_dir_find(const struct director *d, const struct suckaddr *sa,
+	     int (*cmp)(const struct suckaddr *, const struct suckaddr *))
+{
+        struct backend *bp;
+
+	CHECK_OBJ_NOTNULL(d, DIRECTOR_MAGIC);
+	CAST_OBJ_NOTNULL(bp, d->priv, BACKEND_MAGIC);
+
+	if (VTP_Compare(bp->tcp_pool, sa, cmp))
+	        return d;
+	return NULL;
+}
+
 /*--------------------------------------------------------------------*/
 
 static enum sess_close
@@ -490,6 +504,7 @@ VRT_new_backend_clustered(VRT_CTX, struct vsmw_cluster *vc,
 	d->getip = vbe_dir_getip;
 	d->finish = vbe_dir_finish;
 	d->event = vbe_dir_event;
+	d->find = vbe_dir_find;
 	d->panic = vbe_panic;
 	d->destroy = vbe_destroy;
 

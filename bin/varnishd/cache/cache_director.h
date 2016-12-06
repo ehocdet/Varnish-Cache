@@ -65,6 +65,9 @@ typedef enum sess_close vdi_http1pipe_f(const struct director *, struct req *,
 
 typedef void vdi_panic_f(const struct director *, struct vsb *);
 
+typedef const struct director *vdi_find_f(const struct director *d, const struct suckaddr *sa,
+					  int (*cmp)(const struct suckaddr *, const struct suckaddr *));
+
 struct director {
 	unsigned		magic;
 #define DIRECTOR_MAGIC		0x3336351d
@@ -79,6 +82,7 @@ struct director {
 	vdi_getip_f		*getip;
 	vdi_finish_f		*finish;
 	vdi_panic_f		*panic;
+	vdi_find_f		*find;
 	void			*priv;
 	const void		*priv2;
 };

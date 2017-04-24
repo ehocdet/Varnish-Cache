@@ -183,6 +183,7 @@ VSC_F(happy,			uint64_t, 0, 'b', 'b', info,
     "Happy health probes",
 	""
 )
+/*
 VSC_F(bereq_hdrbytes,		uint64_t, 0, 'c', 'B', info,
     "Request header bytes",
 	"Total backend request header bytes sent"
@@ -213,6 +214,7 @@ VSC_F(pipe_in,			uint64_t, 0, 'c', 'B', info,
 	"Total number of bytes forwarded from backend in"
 	" pipe sessions"
 )
+*/
 VSC_F(conn,			uint64_t, 0, 'g', 'i', info,
     "Concurrent connections to backend",
 	""

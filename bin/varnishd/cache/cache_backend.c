@@ -105,7 +105,7 @@ vbe_dir_getfd(struct worker *wrk, struct backend *bp, struct busyobj *bo)
 	Lck_Lock(&bp->mtx);
 	bp->n_conn++;
 	bp->vsc->conn++;
-	bp->vsc->req++;
+	//	bp->vsc->req++;
 	Lck_Unlock(&bp->mtx);
 
 	VTCP_myname(vc->fd, abuf1, sizeof abuf1, pbuf1, sizeof pbuf1);

@@ -219,11 +219,12 @@ VSC_F(conn,			uint64_t, 0, 'g', 'i', info,
     "Concurrent connections to backend",
 	""
 )
+/*
 VSC_F(req,			uint64_t, 0, 'c', 'i', info,
     "Backend requests sent",
 	""
 )
-
+*/
 #endif
 
 /**********************************************************************/

@@ -355,7 +355,7 @@ const char *VRT_GetHdr(VRT_CTX, const struct gethdr_s *);
  * req related
  */
 
-VCL_BYTES VRT_CacheReqBody(VRT_CTX, VCL_BYTES maxsize);
+VCL_BYTES VRT_CacheReqBody(VRT_CTX, VCL_BYTES maxsize, VCL_STEVEDORE);
 
 /* Regexp related */
 

@@ -41,6 +41,7 @@
 #include "vsa.h"
 #include "vtcp.h"
 #include "vtim.h"
+#include "storage/storage.h"
 
 const void * const vrt_magic_string_end = &vrt_magic_string_end;
 const void * const vrt_magic_string_unset = &vrt_magic_string_unset;
@@ -586,7 +587,7 @@ VRT_ban_string(VRT_CTX, const char *str)
 }
 
 VCL_BYTES
-VRT_CacheReqBody(VRT_CTX, VCL_BYTES maxsize)
+VRT_CacheReqBody(VRT_CTX, VCL_BYTES maxsize, VCL_STEVEDORE stv)
 {
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
@@ -596,6 +597,8 @@ VRT_CacheReqBody(VRT_CTX, VCL_BYTES maxsize)
 		    "req.body can only be cached in vcl_recv{}");
 		return (-1);
 	}
+	if (stv && stv != stv_transient)
+		ctx->req->storage = stv;
 	return (VRB_Cache(ctx->req, maxsize));
 }
 

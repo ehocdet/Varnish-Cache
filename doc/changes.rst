@@ -123,7 +123,7 @@ Fixed bugs
 **TODO**
 
 ================================
-Varnish Cache 5.2.1 (unreleased)
+Varnish Cache 5.2.1 (2017-11-14)
 ================================
 
 Bugs fixed

@@ -524,6 +524,8 @@ typedef void vdi_event_f(VCL_BACKEND, enum vcl_event_e);
 typedef void vdi_destroy_f(VCL_BACKEND);
 typedef void vdi_panic_f(VCL_BACKEND, struct vsb *);
 typedef void vdi_list_f(VRT_CTX, VCL_BACKEND, struct vsb *, int, int);
+typedef VCL_BACKEND vdi_find_f(VCL_BACKEND, const struct suckaddr *sa,
+			       int (*cmp)(const struct suckaddr *, const struct suckaddr *));
 
 struct vdi_methods {
 	unsigned			magic;
@@ -539,6 +541,7 @@ struct vdi_methods {
 	vdi_destroy_f			*destroy;
 	vdi_panic_f			*panic;
 	vdi_list_f			*list;
+	vdi_find_f			*find;
 };
 
 struct vcldir;

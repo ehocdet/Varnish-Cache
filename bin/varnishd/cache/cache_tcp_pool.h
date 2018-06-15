@@ -103,3 +103,5 @@ int VTP_Wait(struct worker *, struct pfd *, double tmo);
 
 const struct suckaddr *VTP_getip(struct pfd *);
 
+int VTP_Compare(const struct tcp_pool *, const struct suckaddr *sa,
+		int (*cmp)(const struct suckaddr *, const struct suckaddr *));

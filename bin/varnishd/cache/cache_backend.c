@@ -343,6 +343,25 @@ vbe_dir_getip(VRT_CTX, VCL_BACKEND d)
 	return (VTP_getip(pfd));
 }
 
+/*--------------------------------------------------------------------
+ */
+
+static const struct director * v_matchproto_(vdi_find_f)
+vbe_dir_find(VCL_BACKEND d, const struct suckaddr *sa,
+	     int (*cmp)(const struct suckaddr *, const struct suckaddr *))
+{
+	struct backend *bp;
+
+	CHECK_OBJ_NOTNULL(d, DIRECTOR_MAGIC);
+	if (d == NULL)
+		return (NULL);
+	CAST_OBJ_NOTNULL(bp, d->priv, BACKEND_MAGIC);
+
+	if (VTP_Compare(bp->tcp_pool, sa, cmp))
+		return d;
+	return (NULL);
+}
+
 /*--------------------------------------------------------------------*/
 
 static enum sess_close v_matchproto_(vdi_http1pipe_f)
@@ -529,6 +548,7 @@ static const struct vdi_methods vbe_methods[1] = {{
 	.destroy =		vbe_destroy,
 	.panic =		vbe_panic,
 	.list =			vbe_list,
+	.find =			vbe_dir_find,
 	.healthy =		vbe_healthy
 }};
 
@@ -542,7 +562,8 @@ static const struct vdi_methods vbe_methods_noprobe[1] = {{
 	.event =		vbe_dir_event,
 	.destroy =		vbe_destroy,
 	.panic =		vbe_panic,
-	.list =			vbe_list
+	.list =			vbe_list,
+	.find =			vbe_dir_find
 }};
 
 /*--------------------------------------------------------------------

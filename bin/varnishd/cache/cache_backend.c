@@ -320,6 +320,24 @@ vbe_dir_getip(VRT_CTX, VCL_BACKEND d)
 
 /*--------------------------------------------------------------------
  */
+static VCL_BOOL v_matchproto_(vdi_uptime_f)
+vbe_dir_uptime(VRT_CTX, VCL_BACKEND d, VCL_TIME *changed, double *load)
+{
+	struct backend *be;
+
+	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
+	if (d == NULL)
+		return (0);
+	CHECK_OBJ_NOTNULL(d, DIRECTOR_MAGIC);
+	CAST_OBJ_NOTNULL(be, d->priv, BACKEND_MAGIC);
+
+	if (load != NULL)
+		*load = be->n_conn;
+	return (VRT_Healthy(ctx, d, changed));
+}
+
+/*--------------------------------------------------------------------
+ */
 
 static const struct director * v_matchproto_(vdi_find_f)
 vbe_dir_find(VCL_BACKEND d, const struct suckaddr *sa,
@@ -517,6 +535,7 @@ static const struct vdi_methods vbe_methods[1] = {{
 	.panic =		vbe_panic,
 	.list =			vbe_list,
 	.find =			vbe_dir_find,
+	.uptime =		vbe_dir_uptime,
 	.healthy =		vbe_healthy
 }};
 
@@ -531,7 +550,8 @@ static const struct vdi_methods vbe_methods_noprobe[1] = {{
 	.destroy =		vbe_destroy,
 	.panic =		vbe_panic,
 	.list =			vbe_list,
-	.find =			vbe_dir_find
+	.find =			vbe_dir_find,
+	.uptime =		vbe_dir_uptime
 }};
 
 /*--------------------------------------------------------------------

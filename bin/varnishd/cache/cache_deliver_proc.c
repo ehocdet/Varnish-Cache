@@ -150,7 +150,7 @@ VDP_DeliverObj(struct req *req)
 
 	CHECK_OBJ_NOTNULL(req, REQ_MAGIC);
 	r = ObjIterate(req->wrk, req->objcore, req, vdp_objiterator,
-	    req->objcore->flags & OC_F_PRIVATE ? 1 : 0);
+	    req->objcore->flags & (OC_F_PRIVATE|OC_F_PASS) ? 1 : 0);
 	if (r < 0)
 		return (r);
 	return (0);

@@ -586,7 +586,7 @@ VRT_new_backend_clustered(VRT_CTX, struct vsmw_cluster *vc,
 	const struct vrt_backend_probe *vbp;
 	const struct vdi_methods *m;
 	const struct backend *viabe = NULL;
-	const struct suckaddr *bogo, *sa = NULL;
+	const struct suckaddr *bogo = NULL, *sa = NULL;
 
 	CHECK_OBJ_NOTNULL(ctx, VRT_CTX_MAGIC);
 	CHECK_OBJ_NOTNULL(vrt, VRT_BACKEND_MAGIC);
@@ -673,6 +673,8 @@ VRT_new_backend_clustered(VRT_CTX, struct vsmw_cluster *vc,
 		// could live on stack
 		preamble = VSB_new_auto();
 		// XXX add authority
+		AN(bogo);
+		AN(sa);
 		VPX_Format_Proxy(preamble, 1, bogo, sa, NULL);
 		be->tcp_pool = VTP_Clone(viabe->tcp_pool, vrt_hash_be(vrt),
 		    preamble);

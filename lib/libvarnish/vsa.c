@@ -183,6 +183,9 @@ const size_t vsa_suckaddr_len = sizeof(struct suckaddr);
  */
 static struct suckaddr bogo_ip_vsa;
 const struct suckaddr *bogo_ip = &bogo_ip_vsa;
+/* same in IPv6 */
+static struct suckaddr bogo_ip6_vsa;
+const struct suckaddr *bogo_ip6 = &bogo_ip6_vsa;
 
 void
 VSA_Init()
@@ -196,6 +199,15 @@ VSA_Init()
 	AZ(getaddrinfo("0.0.0.0", "0", &hints, &res));
 	AN(VSA_Build(&bogo_ip_vsa, res->ai_addr, res->ai_addrlen));
 	assert(VSA_Sane(bogo_ip));
+	freeaddrinfo(res);
+
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family = AF_INET6;
+	hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV;
+	hints.ai_socktype = SOCK_STREAM;
+	AZ(getaddrinfo("::", "0", &hints, &res));
+	AN(VSA_Build(&bogo_ip6_vsa, res->ai_addr, res->ai_addrlen));
+	assert(VSA_Sane(bogo_ip6));
 	freeaddrinfo(res);
 }
 

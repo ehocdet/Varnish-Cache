@@ -863,7 +863,7 @@ cnt_recv(struct worker *wrk, struct req *req)
 	if (req->req_body_status == REQ_BODY_TOO_LARGE) {
 		req->err_code = 413;
 		req->req_step = R_STP_SYNTH;
-		return (REQ_FSM_MORE);
+		return (REQ_FSM_DONE);
 	}
 	if (req->req_body_status == REQ_BODY_FAIL) {
 		req->doclose = SC_RX_BODY;

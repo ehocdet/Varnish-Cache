@@ -557,7 +557,7 @@ VRT_backend_vsm_need(VRT_CTX)
 }
 
 static uint64_t
-vrt_hash_be(const struct vrt_backend *vrt)
+vrt_hash_be(const struct vrt_backend *vrt, const struct vsb *aux)
 {
 	struct VSHA256Context cx[1];
 	unsigned char ident[VSHA256_DIGEST_LENGTH];
@@ -572,6 +572,8 @@ vrt_hash_be(const struct vrt_backend *vrt)
 		VSHA256_Update(cx, vrt->path, strlen(vrt->path));
 	if (vrt->prefix_ptr != NULL)
 		VSHA256_Update(cx, vrt->prefix_ptr, vrt->prefix_len);
+	if (aux != NULL)
+		VSHA256_Update(cx, VSB_data(aux), VSB_len(aux));
 	VSHA256_Final(ident, cx);
 	return (vbe64dec(ident));
 }
@@ -672,15 +674,15 @@ VRT_new_backend_clustered(VRT_CTX, struct vsmw_cluster *vc,
 		AN(viabe->tcp_pool);
 		// could live on stack
 		preamble = VSB_new_auto();
-		// XXX add authority
 		AN(bogo);
 		AN(sa);
-		VPX_Format_Proxy(preamble, 1, bogo, sa, NULL);
-		be->tcp_pool = VTP_Clone(viabe->tcp_pool, vrt_hash_be(vrt),
-		    preamble);
+		VPX_Format_Proxy(preamble, 2, bogo, sa, be->authority);
+		be->tcp_pool = VTP_Clone(viabe->tcp_pool,
+		    vrt_hash_be(vrt, preamble), preamble);
+		VSB_destroy(&preamble);
 	} else {
 		be->tcp_pool = VTP_Ref(vrt->ipv4_suckaddr, vrt->ipv6_suckaddr,
-				       vrt->path, vrt_hash_be(vrt), NULL);
+		    vrt->path, vrt_hash_be(vrt, NULL), NULL);
 	}
 
 	AN(be->tcp_pool);
